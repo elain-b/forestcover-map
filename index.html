@@ -29,30 +29,72 @@
     <div id="map"></div>
     <script>
       mapboxgl.accessToken =
-        "pk.eyJ1IjoiZG5vbWFkYiIsImEiOiJjaW16aXFsZzUwNHJmdjdra3h0Nmd2cjY1In0.SqzkaKalXxQaPhQLjodQcQ";
+        "pk.eyJ1IjoiYmVybjI5NDciLCJhIjoiY2twdXNucXA1MDBkdzJvbHFjbHVwdmVnOSJ9.7uiB3ngWI1rLSY9U5FLjag";
       const map = new mapboxgl.Map({
         container: "map",
-        style: "mapbox://styles/mapbox/empty-v9",
-        center: [-74.5, 40],
-        zoom: 9
+        style: "mapbox://styles/mapbox/streets-v9",
+        center: [139.77982922373764, 35.98366175147574],
+        zoom: 4
       });
       map.on("load", () => {
-        map.addSource("256", {
-          type: "raster",
-          url: "mapbox://mapbox.satellite",
-          tileSize: 256
+        map.addSource('treecover2000', {
+        type: 'geojson',
+        data: './vectorsToDriveExample.geojson'
         });
+
         map.addLayer({
-          id: "satellite",
-          source: "256",
-          type: "raster"
+            id: 'treecover2000',
+            type: 'fill',
+            source: 'treecover2000',
+            paint: {
+                "fill-color": "hsla(136, 100%, 24%, 0.5)"
+            }
         });
-        map.on("mousemove", (e) => {
-          const r = (e.point.y / map.getContainer().offsetHeight) * 360;
-          const c = (e.point.x / map.getContainer().offsetWidth) * 2 - 1;
-          map.setPaintProperty('satellite', 'raster-hue-rotate', r);
-          map.setPaintProperty('satellite', 'raster-saturation', c);
+
+        map.addSource('loss', {
+            type: 'geojson',
+            data: './Hansen-loss.geojson'
         });
+
+        map.addLayer({
+            id: 'loss',
+            type: 'fill',
+            source: 'loss',
+            paint: {
+                "fill-color": [
+                    "interpolate",
+                    ["linear"],
+                    ["get", "zone"],
+                    0,
+                    "hsla(0, 99%, 56%, 0)",
+                    1,
+                    "hsl(0, 99%, 56%)"
+                ]
+            }
+        });
+
+        map.addSource('gain', {
+            type: 'geojson',
+            data: './Hansen-gain.geojson'
+        });
+
+        map.addLayer({
+            id: 'gain',
+            type: 'fill',
+            source: 'gain',
+            paint: {
+                "fill-color": [
+                    "interpolate",
+                    ["linear"],
+                    ["get", "zone"],
+                    0,
+                    "hsla(130, 100%, 26%, 0)",
+                    1,
+                    "hsl(130, 100%, 47%)"
+                ]
+            }
+        });
+
       });
     </script>
   </body>
